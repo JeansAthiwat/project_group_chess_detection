@@ -2,6 +2,7 @@
 # website: https://www.xilinx.com/support/download.html
 
 # [home]
+.DS_Store
 *.jou
 *.log
 *.debug

@@ -2,25 +2,25 @@
 
 module top(
     input clk,          // 100MHz on Basys 3
-    input reset,        // btnC on Basys 3
-    input btnU,         // btnU on Basys 3 and send data from switch to another
-    input btnD,         // btnU on Basys 3 and send data from switch to another
-    output wire RsTx,   // UART
-    input wire RsRx,    // UART
-    input [8:0] sw,     // switch
+    input reset,        // btnC 
+    input btnU,         // send data from sw 
+    input btnD,         // language toggle
+    output wire RsTx,   // UART transmit
+    input wire RsRx,    // UART recieve
+    input [8:0] sw,     // switch sw[7:0] for data sw[8] for sw keyboard switching
     input ja1,          // Receive from another board
-    input PS2Clk,             // PS/2 Clock
-    input PS2Data,            // PS/2 Data
+    input PS2Clk,       // PS/2 Clock
+    input PS2Data,      // PS/2 Data
     output ja2,         // Transmit to another board
     output hsync,       // to VGA connector
     output vsync,       // to VGA connector
     output [11:0] rgb,  // to DAC, to VGA connector
     output [6:0] seg,   // 7-Segment Display
-    output dp,
+    output dp,          // 7-Segment decimal point
     output [3:0] an     // 7-Segment an control
     );
     
-    // PS/2 Keyboard Receiver
+    // PS/2 Keyboard Receiver func
     wire [15:0] ps2_keycode;
     wire ps2_flag;
     wire [6:0] ps2_ascii;
@@ -39,10 +39,6 @@ module top(
         .ascii(ps2_ascii)
     );
     
-//    reg [7:0] ps2_ascii_reg;
-//    always @(*) begin
-//        ps2_ascii_reg = {1'b0, ps2_ascii};
-//    end
     
     wire [7:0] transmit_ascii_code;
     assign transmit_ascii_code = (sw[8]) ? sw[7:0] : {1'b0, ps2_ascii};
@@ -79,7 +75,7 @@ module top(
                 .rx(ja1), .data_received(data_in), .received(received1),
                 .dte(1'b0), .clk(clk));
                 
-// UART2 Receive from keyboard or ExtKB/sw and transmit to another
+    // UART2 Receive from keyboard or ExtKB/SW[7:0] and transmit to another
     uart uart2(.rx(RsRx), .data_transmit(transmit_ascii_code), 
                .tx(ja2), .data_received(gnd_b), .received(received2),
                .dte(duality_transmit_en), .clk(clk));
@@ -96,7 +92,7 @@ module top(
     always @(reset) begin
         idx = 0;
     end
-    // rgb buffer
+    // RGB buffer
     always @(posedge clk)begin
         if(w_p_tick)
             rgb_reg <= rgb_next;

@@ -21,8 +21,8 @@ module ascii_test(
     wire [6:0] ascii_char;        // 7-bit ASCII character code
     wire [3:0] char_row;          // 4-bit row of ASCII character
     wire [2:0] bit_addr;          // Column number of ROM data
-    wire [7:0] rom_data_en;          // 8-bit row data from text ROM
-    wire [7:0] rom_data_th;          // 8-bit row data from text ROM
+    wire [7:0] rom_data_en;       // 8-bit row data from English's text ROM
+    wire [7:0] rom_data_th;       // 8-bit row data from Thai's text ROM
     wire ascii_bit_en,ascii_bit_th, plot;         // ASCII ROM bit and plot signal
     
     integer i = 0;                  // Loop counter
@@ -31,7 +31,7 @@ module ascii_test(
     initial begin
         itr = 8'b00000000;
         for (i = 0; i < MEMSIZE; i = i + 1) begin
-            mem[i] = 7'h00;         // Initialize all memory locations to 7'h00
+            mem[i] = 7'h00;         // Initialize all memory locations to 7'h00 
         end
     end
 
@@ -59,7 +59,7 @@ module ascii_test(
     assign bit_addr = x[2:0];                   // Column number of ASCII character
 
     // Memory access: Adjusted for 32 columns per row
-//    assign ascii_char = mem[(x[7:3]) + 32 * (y[6:4])]; // 32 columns, 8 rows (grid of 32x8)
+    //    assign ascii_char = mem[(x[7:3]) + 32 * (y[6:4])]; // 32 columns, 8 rows (grid of 32x8)
     assign ascii_char = mem[((x[7:3] + 8) % 32) + (32 * ((y[6:4] + 5)%8))]; // 32 columns, 8 rows (grid of 32x8)
     
     // Plot signal update for larger display area
@@ -74,7 +74,7 @@ always @(posedge we or posedge reset) begin
     if (reset) begin
         itr = 8'b00000000;
         for (i = 0; i < MEMSIZE; i = i + 1) begin
-            mem[i] <= 7'h00;         // Initialize all memory locations to 7'h00
+            mem[i] <= 7'h00;         // Initialize all memory locations to 7'h00 in order to reset screen
         end
     end else if (we) begin
         if (data[6:0] == 13) begin // Enter key
